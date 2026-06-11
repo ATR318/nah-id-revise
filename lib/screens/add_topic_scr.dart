@@ -46,7 +46,24 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     topicController.addListener(checkFields);
   }
 
-  
+  Future<void> submit() async {
+  await FirebaseFirestore.instance.collection('subjects').add({
+    'name': subjectController.text.trim(),
+    'topic': topicController.text.trim(),
+    'difficulty': difficultyController.text.trim(),
+  });
+
+  subjectController.clear();
+  topicController.clear();
+  difficultyController.clear();
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Topic added successfully'),
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,17 +99,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             SizedBox(height: 15),
             
             ElevatedButton(
-              onPressed:  isButtonEnabled 
-              ? () async {
-                await FirebaseFirestore.instance.collection('subjects').add({
-                  'name': subjectController.text.trim(),
-                  'topic': topicController.text.trim(),
-                  'difficulty': difficultyController.text.trim()
-                  }); 
-                }
-              : null, 
+              onPressed: isButtonEnabled ? submit : null,  
             child: const Text('Submit')
             )
+            
           ],
         ),
       ),
